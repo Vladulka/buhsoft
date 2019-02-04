@@ -12,15 +12,17 @@ import java.util.ArrayList;
 
 import testvladkuz.buhsoftttm.classes.ALC;
 import testvladkuz.buhsoftttm.classes.Items;
+import testvladkuz.buhsoftttm.classes.Settings;
 import testvladkuz.buhsoftttm.classes.TTM;
 
 public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandler {
 
-    private static final int DATABASE_VERSION = 4;
-    private static final String DATABASE_NAME = "test";
+    private static final int DATABASE_VERSION = 5;
+    private static final String DATABASE_NAME = "test1";
     private static final String MAIN = "main";
     private static final String FOOTER = "footer";
     private static final String ALCT = "alc";
+    private static final String PROFILE = "profile";
 
     private static final String ID = "id";
     private static final String TITLE = "title";
@@ -44,6 +46,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
 
     private static final String ALCMARK = "alc";
 
+    private static final String KEY_ID = "id";
+    private static final String ZNAC = "name";
+    private static final String TEXT = "text";
 
     Context context;
 
@@ -67,10 +72,10 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
                 + ID + " INTEGER PRIMARY KEY," + DOCID + " TEXT," + ITEMID + " TEXT," + ALCMARK + " TEXT," + STATUS + " TEXT" + ")";
         db.execSQL(CREATE_INFO);
 
-//        CREATE_INFO = "CREATE TABLE " + ITEMS + "("
-//                + ID + " INTEGER PRIMARY KEY," + TITLE + " TEXT," + DOCID + " TEXT,"
-//                + ALCCODE + " TEXT," + CAPACITY + " TEXT," + VOLUME + " TEXT," + SHORTNAME + " TEXT," + FAR1 + " TEXT," + FAR2 + " TEXT," + ALCMARK + " TEXT," + NUMS + " TEXT," + FACTNUMS + " TEXT" + ")";
-//        db.execSQL(CREATE_INFO);
+         CREATE_INFO = "CREATE TABLE " + PROFILE + "("
+                + KEY_ID + " INTEGER PRIMARY KEY," + ZNAC + " TEXT,"
+                + TEXT + " TEXT" + ")";
+        db.execSQL(CREATE_INFO);
     }
 
     @Override
@@ -113,6 +118,23 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         }
 
         return size;
+    }
+
+    @Override
+    public int getUsersSize() {
+        int i = 0;
+        String selectQuery = "SELECT  * FROM " + PROFILE;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                i++;
+            } while (cursor.moveToNext());
+        }
+
+        return i;
     }
 
     @Override
@@ -176,6 +198,17 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         values.put(STATUS, alc.getStatus());
 
         db.insert(ALCT, null, values);
+        db.close();
+    }
+
+    @Override
+    public void addUserInfo(Settings info) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ZNAC, info.getZn());
+        values.put(TEXT, info.getText());
+
+        db.insert(PROFILE, null, values);
         db.close();
     }
 
@@ -245,6 +278,24 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         }
 
         return list;
+    }
+
+    @Override
+    public String getUserInfo(String info) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(PROFILE, new String[] { KEY_ID,
+                        ZNAC, TEXT}, ZNAC + "=?",
+                new String[] { info }, null, null, null, null);
+        String inf = "";
+        if (cursor != null){
+            cursor.moveToFirst();
+            inf =  cursor.getString(2);
+        } else {
+            inf = "";
+        }
+
+        return inf;
     }
 
     @Override
@@ -464,6 +515,17 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
             }
 
         db.update(FOOTER, values, ID 	+ "	= ?", new String[] { id });
+    }
+
+    @Override
+    public int updateUserInfo(Settings contact) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(TEXT, contact.getText());
+
+        return db.update(PROFILE, values, ZNAC + " = ?",
+                new String[] { String.valueOf(contact.getZn()) });
     }
 
 

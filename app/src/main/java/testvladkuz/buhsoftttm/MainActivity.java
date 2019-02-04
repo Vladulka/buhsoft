@@ -16,14 +16,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import testvladkuz.buhsoftttm.adapter.TTMAdapter;
+import testvladkuz.buhsoftttm.classes.Settings;
 import testvladkuz.buhsoftttm.fragments.OneFragment;
 import testvladkuz.buhsoftttm.fragments.ThreeFragment;
 import testvladkuz.buhsoftttm.fragments.TwoFragment;
+import testvladkuz.buhsoftttm.sqldatabase.DatabaseHandler;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     final int REQUEST_CODE = 101;
+    DatabaseHandler db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,15 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE},
                     REQUEST_CODE);
         }
+
+        db = new DatabaseHandler(this);
+
+
+        if(db.getUsersSize() == 0) {
+            Toast.makeText(getApplicationContext(), "No", Toast.LENGTH_SHORT).show();
+            db.addUserInfo(new Settings("url", ""));
+        }
+
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 
 import testvladkuz.buhsoftttm.MainActivity;
 import testvladkuz.buhsoftttm.R;
+import testvladkuz.buhsoftttm.UTMItemActivity;
 import testvladkuz.buhsoftttm.adapter.TTMAdapter;
 import testvladkuz.buhsoftttm.classes.ALC;
 import testvladkuz.buhsoftttm.classes.Items;
@@ -111,6 +112,15 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                 } catch (Exception ex) {
                     System.out.println("browseClick :"+ex);//android.content.ActivityNotFoundException ex
                 }
+            }
+        });
+
+        FloatingActionButton fab1 = v.findViewById(R.id.fab2);
+        fab1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), UTMItemActivity.class);
+                startActivity(intent);
             }
         });
 

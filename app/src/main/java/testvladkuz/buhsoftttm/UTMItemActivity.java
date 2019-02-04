@@ -54,13 +54,7 @@ public class UTMItemActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         utm.setLayoutManager(linearLayoutManager);
 
-//        getUTN(getIntent().getStringExtra("url"));
-
-        String full = "<A>\n" +
-                "<url fileId=\"030xB14E400D-553B-42A2-9772-22B2B7C63222\" timestamp=\"2019-01-31T17:03:13.702+0300\">http://185.154.201.243:8181/opt/out/FORM2REGINFO/5</url>\n" +
-                "<ver>1</ver>\n" +
-                "</A>";
-        showList(full);
+        getUTN(db.getUserInfo("url"));
     }
 
     public void getUTN(final String url){
