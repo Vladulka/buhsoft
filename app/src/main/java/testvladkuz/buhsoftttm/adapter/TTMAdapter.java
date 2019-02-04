@@ -108,9 +108,7 @@ public class TTMAdapter extends RecyclerView.Adapter<TTMViewHolder>{
                         holder.checkBox.setChecked(false);
 
                     } else {
-
                         checkable.set(position, true);
-
                         holder.checkBox.setChecked(true);
 
                     }

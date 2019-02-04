@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import testvladkuz.buhsoftttm.classes.ALC;
 import testvladkuz.buhsoftttm.classes.Items;
+import testvladkuz.buhsoftttm.classes.Settings;
 import testvladkuz.buhsoftttm.classes.TTM;
 
 public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandler {
@@ -21,6 +22,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     private static final String MAIN = "main";
     private static final String FOOTER = "footer";
     private static final String ALCT = "alc";
+    private static final String PROFILE = "profile";
 
     private static final String ID = "id";
     private static final String TITLE = "title";
@@ -44,6 +46,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
 
     private static final String ALCMARK = "alc";
 
+    private static final String KEY_ID = "id";
+    private static final String ZNAC = "name";
+    private static final String TEXT = "text";
 
     Context context;
 
@@ -65,6 +70,11 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
 
         CREATE_INFO = "CREATE TABLE " + ALCT + "("
                 + ID + " INTEGER PRIMARY KEY," + DOCID + " TEXT," + ITEMID + " TEXT," + ALCMARK + " TEXT," + STATUS + " TEXT" + ")";
+        db.execSQL(CREATE_INFO);
+
+         CREATE_INFO = "CREATE TABLE " + PROFILE + "("
+                + KEY_ID + " INTEGER PRIMARY KEY," + ZNAC + " TEXT,"
+                + TEXT + " TEXT" + ")";
         db.execSQL(CREATE_INFO);
 
 //        CREATE_INFO = "CREATE TABLE " + ITEMS + "("
@@ -180,6 +190,17 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     }
 
     @Override
+    public void addUserInfo(Settings info) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ZNAC, info.getZn());
+        values.put(TEXT, info.getText());
+
+        db.insert(PROFILE, null, values);
+        db.close();
+    }
+
+    @Override
     public void deleteALC(String id) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -245,6 +266,24 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         }
 
         return list;
+    }
+
+    @Override
+    public String getUserInfo(String info) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(PROFILE, new String[] { KEY_ID,
+                        ZNAC, TEXT}, ZNAC + "=?",
+                new String[] { info }, null, null, null, null);
+        String inf = "";
+        if (cursor != null){
+            cursor.moveToFirst();
+            inf =  cursor.getString(2);
+        } else {
+            inf = "";
+        }
+
+        return inf;
     }
 
     @Override
@@ -464,6 +503,17 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
             }
 
         db.update(FOOTER, values, ID 	+ "	= ?", new String[] { id });
+    }
+
+    @Override
+    public int updateUserInfo(Settings contact) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(TEXT, contact.getText());
+
+        return db.update(PROFILE, values, ZNAC + " = ?",
+                new String[] { String.valueOf(contact.getZn()) });
     }
 
 

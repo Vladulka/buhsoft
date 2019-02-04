@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import testvladkuz.buhsoftttm.classes.ALC;
 import testvladkuz.buhsoftttm.classes.Items;
+import testvladkuz.buhsoftttm.classes.Settings;
 import testvladkuz.buhsoftttm.classes.TTM;
 
 public interface IDatabaseHandler {
@@ -27,4 +28,8 @@ public interface IDatabaseHandler {
     public String findALCByPDF417(String alc, String id, boolean type);
     public String findALCByShtrih(String alc, String id);
     public void updateAlcStatus(String alc);
+
+    public void addUserInfo(Settings info);
+    public String getUserInfo(String info);
+    public int updateUserInfo(Settings user);
 }
