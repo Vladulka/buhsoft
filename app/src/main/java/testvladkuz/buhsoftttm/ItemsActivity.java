@@ -52,8 +52,7 @@ public class ItemsActivity extends AppCompatActivity implements ItemsDialogAdapt
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ItemsActivity.this, MainActivity.class);
-                startActivity(intent);
+                onBackPressed();
             }
         });
 

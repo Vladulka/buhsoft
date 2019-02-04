@@ -11,12 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import testvladkuz.buhsoftttm.ItemsActivity;
 import testvladkuz.buhsoftttm.R;
 import testvladkuz.buhsoftttm.ScannerActivity;
 import testvladkuz.buhsoftttm.UTMItemActivity;
 import testvladkuz.buhsoftttm.adapter.ItemsDialogAdapter;
+import testvladkuz.buhsoftttm.classes.Settings;
+import testvladkuz.buhsoftttm.sqldatabase.DatabaseHandler;
 
 public class ThreeFragment extends Fragment {
 
@@ -25,7 +28,8 @@ public class ThreeFragment extends Fragment {
     }
 
     Dialog dialog;
-    EditText url;
+    TextView url_text;
+    DatabaseHandler db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,9 +41,12 @@ public class ThreeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_three, container, false);
 
-        url = v.findViewById(R.id.url);
+        db = new DatabaseHandler(getActivity());
+        url_text = v.findViewById(R.id.url);
 
-        url.setOnClickListener(new View.OnClickListener() {
+        url_text.setText(db.getUserInfo("url"));
+
+        url_text.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog = new Dialog(getActivity());
@@ -51,9 +58,9 @@ public class ThreeFragment extends Fragment {
                 current.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(getActivity(), UTMItemActivity.class);
-                        intent.putExtra("url", url.getText().toString());
-                        startActivity(intent);
+                        db.updateUserInfo(new Settings("url", url.getText().toString()));
+                        url_text.setText(url.getText().toString());
+                        dialog.dismiss();
                     }
                 });
                 dialog.show();

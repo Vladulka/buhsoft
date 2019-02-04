@@ -31,5 +31,6 @@ public interface IDatabaseHandler {
 
     public void addUserInfo(Settings info);
     public String getUserInfo(String info);
+    public int getUsersSize();
     public int updateUserInfo(Settings user);
 }

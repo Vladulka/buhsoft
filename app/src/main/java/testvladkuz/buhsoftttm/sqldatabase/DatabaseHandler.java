@@ -17,8 +17,8 @@ import testvladkuz.buhsoftttm.classes.TTM;
 
 public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandler {
 
-    private static final int DATABASE_VERSION = 4;
-    private static final String DATABASE_NAME = "test";
+    private static final int DATABASE_VERSION = 5;
+    private static final String DATABASE_NAME = "test1";
     private static final String MAIN = "main";
     private static final String FOOTER = "footer";
     private static final String ALCT = "alc";
@@ -76,11 +76,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
                 + KEY_ID + " INTEGER PRIMARY KEY," + ZNAC + " TEXT,"
                 + TEXT + " TEXT" + ")";
         db.execSQL(CREATE_INFO);
-
-//        CREATE_INFO = "CREATE TABLE " + ITEMS + "("
-//                + ID + " INTEGER PRIMARY KEY," + TITLE + " TEXT," + DOCID + " TEXT,"
-//                + ALCCODE + " TEXT," + CAPACITY + " TEXT," + VOLUME + " TEXT," + SHORTNAME + " TEXT," + FAR1 + " TEXT," + FAR2 + " TEXT," + ALCMARK + " TEXT," + NUMS + " TEXT," + FACTNUMS + " TEXT" + ")";
-//        db.execSQL(CREATE_INFO);
     }
 
     @Override
@@ -123,6 +118,23 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         }
 
         return size;
+    }
+
+    @Override
+    public int getUsersSize() {
+        int i = 0;
+        String selectQuery = "SELECT  * FROM " + PROFILE;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                i++;
+            } while (cursor.moveToNext());
+        }
+
+        return i;
     }
 
     @Override
