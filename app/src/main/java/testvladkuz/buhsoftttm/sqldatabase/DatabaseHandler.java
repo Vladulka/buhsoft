@@ -172,7 +172,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         values.put(VOLUME, items.getVolume());
         values.put(FAR1, items.getFar1());
         values.put(FAR2, items.getFar2());
-        values.put(NUMS, items.getNums());
+        values.put(NUMS, String.valueOf(items.getNums()));
         values.put(FACTNUMS, items.getFactnums());
         values.put(BARCODE, items.getCode());
 
@@ -269,7 +269,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
                 obj.setVolume(cursor.getString(5));
                 obj.setFar1(cursor.getString(6));
                 obj.setFar2(cursor.getString(7));
-                obj.setNums(cursor.getString(8));
+                obj.setNums(Integer.parseInt(cursor.getString(8)));
                 obj.setFactnums(cursor.getString(9));
                 obj.setCode(cursor.getString(10));
 

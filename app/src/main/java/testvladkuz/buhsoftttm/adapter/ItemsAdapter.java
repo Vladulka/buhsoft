@@ -33,14 +33,14 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsViewHolder> {
     @Override
     public void onBindViewHolder(ItemsViewHolder holder, int position) {
 //        Toast.makeText(context, data.get(position).getAlccode(), Toast.LENGTH_SHORT).show();
-        holder.progress.setMax(Integer.valueOf(data.get(position).getNums()));
+        holder.progress.setMax(data.get(position).getNums());
         holder.progress.setProgress(Integer.valueOf(data.get(position).getFactnums()), true);
 
         holder.title.setText(data.get(position).getTitle());
         holder.alcCode.setText(data.get(position).getAlccode());
 
         holder.fact.setText(data.get(position).getFactnums());
-        holder.max.setText(data.get(position).getNums());
+        holder.max.setText(String.valueOf(data.get(position).getNums()));
 
 //        Toast.makeText(context, data.get(position).getAlccode(), Toast.LENGTH_SHORT).show();
 

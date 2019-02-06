@@ -3,8 +3,8 @@ package testvladkuz.buhsoftttm.classes;
 public class Items {
 
     int id;
-    String docid, title, alccode, capacity, volume, shortname, far1, far2, alcmark, nums, factnums, code;
-
+    String docid, title, alccode, capacity, volume, shortname, far1, far2, alcmark, factnums, code;
+    int nums;
     public Items(){
     }
 
@@ -13,7 +13,7 @@ public class Items {
         this.title = title;
     }
 
-    public Items(int id, String docid, String title, String alccode, String capacity, String volume, String shortname, String far1, String far2, String alcmark, String nums, String factnums, String code){
+    public Items(int id, String docid, String title, String alccode, String capacity, String volume, String shortname, String far1, String far2, String alcmark, int nums, String factnums, String code){
         this.id = id;
         this.docid = docid;
         this.title = title;
@@ -29,7 +29,7 @@ public class Items {
         this.code = code;
     }
 
-    public Items(String docid, String title, String alccode, String capacity, String volume, String shortname, String far1, String far2, String alcmark, String nums, String factnums, String code){
+    public Items(String docid, String title, String alccode, String capacity, String volume, String shortname, String far1, String far2, String alcmark, int nums, String factnums, String code){
         this.docid = docid;
         this.title = title;
         this.alccode = alccode;
@@ -124,11 +124,11 @@ public class Items {
         this.alcmark = alcmark;
     }
 
-    public String getNums(){
+    public int getNums(){
         return this.nums;
     }
 
-    public void setNums(String nums){
+    public void setNums(int nums){
         this.nums = nums;
     }
 

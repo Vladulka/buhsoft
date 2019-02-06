@@ -242,7 +242,7 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                                         alc.setStatus("0");
                                         db.addNewALC(alc);
                                     } else if ("Quantity".equalsIgnoreCase(tagName)) {
-                                        items.setNums(textValue);
+                                        items.setNums(Integer.valueOf(textValue));
                                         items.setFactnums("0");
                                     }
 

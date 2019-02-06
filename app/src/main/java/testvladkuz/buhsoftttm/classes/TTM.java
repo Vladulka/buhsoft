@@ -4,6 +4,7 @@ public class TTM {
 
     int id;
     private String title, fsrar, guid, date, inn, shortname, status;
+    boolean checked;
 
     public TTM(){}
 
@@ -26,6 +27,17 @@ public class TTM {
         this.inn = inn;
         this.shortname = shortname;
         this.status = status;
+    }
+
+    public TTM(String title, String fsrar, String guid, String date, String inn, String shortname, String status, boolean checked){
+        this.title = title;
+        this.fsrar = fsrar;
+        this.guid = guid;
+        this.date = date;
+        this.inn = inn;
+        this.shortname = shortname;
+        this.status = status;
+        this.checked = checked;
     }
 
     ///////////////////////////////////////////////
@@ -94,6 +106,14 @@ public class TTM {
 
     public void setStatus(String status){
         this.status = status;
+    }
+
+    public boolean getChecked(){
+        return this.checked;
+    }
+
+    public void setChecked(boolean checked){
+        this.checked = checked;
     }
 
 

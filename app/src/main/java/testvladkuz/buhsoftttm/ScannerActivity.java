@@ -355,7 +355,7 @@ public class ScannerActivity extends AppCompatActivity implements MessageDialogF
             int i = db.getItemsSize();
             Toast.makeText(getApplicationContext(), db.findALC(code, docid), Toast.LENGTH_LONG).show();
 
-            db.addNewToFooter(new Items(i, docid, object.getString("name"), object.getString("alccode"), "", "", "", "", "", "","1", "1", code));
+            db.addNewToFooter(new Items(i, docid, object.getString("name"), object.getString("alccode"), "", "", "", "", "", "",1, "1", code));
             db.addNewALC(new ALC(docid, String.valueOf(i), getIntent().getStringExtra("code"), "1"));
         } catch (JSONException e) {
             e.printStackTrace();

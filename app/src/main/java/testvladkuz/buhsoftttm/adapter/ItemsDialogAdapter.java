@@ -70,25 +70,8 @@ public class ItemsDialogAdapter extends RecyclerView.Adapter<ItemsViewHolder> {
                 db.updateItemStatus(String.valueOf(data.get(position).getId()));
                 eventListener.showDialogView(false);
                 eventListener.updateItem(position);
-//                String id = db.findALC(alc, String.valueOf(data.get(position).getId()));
-//                if(id.equals("-1")) {
-//                    Intent intent = new Intent(context, ItemsActivity.class);
-//                    intent.putExtra("title", data.get(position).getTitle());
-//                    intent.putExtra("docid", String.valueOf(data.get(position).getId()));
-//                    intent.putExtra("result", "-3");
-//                    intent.putExtra("code", alc);
-//
-//                    context.startActivity(intent);
-//                    eventListener.showDialogView(false);
-//                } else if(id.equals("-2")) {
-//                    Toast.makeText(context, "Данный штрих-код уже был отсканирован в этой накладной.", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    eventListener.showDialogView(false);
-//                }
             }
         });
-//        Toast.makeText(context, data.get(position).getAlccode(), Toast.LENGTH_SHORT).show();
-
     }
 
     @Override

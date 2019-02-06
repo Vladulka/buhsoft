@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -51,6 +52,7 @@ public class UTMItemActivity extends AppCompatActivity {
     Button add;
     TTMAdapterUTM adapter;
     ArrayList<String> urls = new ArrayList<>();
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,7 @@ public class UTMItemActivity extends AppCompatActivity {
 
         utm = findViewById(R.id.list);
         add = findViewById(R.id.add);
+        progressBar = findViewById(R.id.progress);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         utm.setLayoutManager(linearLayoutManager);
@@ -247,6 +250,7 @@ public class UTMItemActivity extends AppCompatActivity {
                     case XmlPullParser.END_TAG:
                         if (inEntryHeader) {
                             if ("Header".equalsIgnoreCase(tagName)) {
+                                obj.setChecked(false);
                                 ttms.add(obj);
                                 inEntryHeader = false;
                             } else if ("Shipper".equalsIgnoreCase(tagName)) {
@@ -278,15 +282,11 @@ public class UTMItemActivity extends AppCompatActivity {
                 parser.next();
             }
 
-            checkable.add(0, true);
-
-            for(int i = 1; i < ttms.size(); i++) {
-                checkable.add(i, false);
-            }
-
-            adapter = new TTMAdapterUTM(this, ttms, true, checkable);
+            ttms.get(0).setChecked(true);
+            adapter = new TTMAdapterUTM(this, ttms);
 
             utm.setAdapter(adapter);
+            progressBar.setVisibility(View.GONE);
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -435,7 +435,8 @@ public class UTMItemActivity extends AppCompatActivity {
                                 alc.setStatus("0");
                                 db.addNewALC(alc);
                             } else if ("Quantity".equalsIgnoreCase(tagName)) {
-                                items.setNums(textValue);
+                                int price = (int) Double.parseDouble(textValue);
+                                items.setNums(price);
                                 items.setFactnums("0");
                             }
 

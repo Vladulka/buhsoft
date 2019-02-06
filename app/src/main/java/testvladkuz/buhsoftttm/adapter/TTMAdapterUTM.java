@@ -22,11 +22,10 @@ import testvladkuz.buhsoftttm.sqldatabase.DatabaseHandler;
 public class TTMAdapterUTM extends RecyclerView.Adapter<TTMViewHolder>{
 
     private ArrayList<TTM> data;
-    private ArrayList<Boolean> checkable;
     Context context;
-    Boolean chk, selected = false;
+    Boolean selected = false;
     DatabaseHandler db;
-    int checkedPos = -1;
+    int checkedPos = 0;
     View v;
 
     onCallOneFragmentFunctionsListener eventListener;
@@ -35,26 +34,15 @@ public class TTMAdapterUTM extends RecyclerView.Adapter<TTMViewHolder>{
         void showAndHideButtons(boolean show);
     }
 
-    public TTMAdapterUTM(Context context, ArrayList<TTM> data, Boolean check, ArrayList<Boolean> checked, onCallOneFragmentFunctionsListener eventListener) {
+    public TTMAdapterUTM(Context context, ArrayList<TTM> data, onCallOneFragmentFunctionsListener eventListener) {
         this.data = data;
-        this.chk = check;
         this.context = context;
-        this.checkable = checked;
         this.eventListener = eventListener;
         db = new DatabaseHandler(context);
     }
 
-    public TTMAdapterUTM(Context context, ArrayList<TTM> data, Boolean check, ArrayList<Boolean> checked) {
+    public TTMAdapterUTM(Context context, ArrayList<TTM> data) {
         this.data = data;
-        this.chk = check;
-        this.context = context;
-        this.checkable = checked;
-        db = new DatabaseHandler(context);
-    }
-
-    public TTMAdapterUTM(Context context, ArrayList<TTM> data, Boolean check) {
-        this.data = data;
-        this.chk = check;
         this.context = context;
         db = new DatabaseHandler(context);
     }
@@ -69,16 +57,8 @@ public class TTMAdapterUTM extends RecyclerView.Adapter<TTMViewHolder>{
     @Override
     public void onBindViewHolder(final TTMViewHolder holder, final int position) {
 
-        if(chk) {
-            holder.checkBox.setVisibility(View.VISIBLE);
-            if(checkable.get(position)) {
-                holder.checkBox.setChecked(true);
-            } else {
-                holder.checkBox.setChecked(false);
-            }
-        } else {
-            holder.checkBox.setVisibility(View.GONE);
-        }
+        holder.checkBox.setVisibility(View.VISIBLE);
+        holder.checkBox.setChecked(data.get(position).getChecked());
 
         holder.title.setText(data.get(position).getTitle());
         holder.date.setText(data.get(position).getDate());
@@ -89,38 +69,16 @@ public class TTMAdapterUTM extends RecyclerView.Adapter<TTMViewHolder>{
             public void onClick(View view) {
                 if(position != checkedPos) {
                     if(checkedPos != -1) {
-                        checkable.set(checkedPos, false);
+                        data.get(checkedPos).setChecked(false);
                     }
-                    checkedPos = position;
-                    checkable.set(checkedPos, true);
-                    holder.checkBox.setChecked(true);
-                } else {
-                    holder.checkBox.setChecked(false);
-                    checkable.set(position, false);
-                    checkedPos = -1;
-
-                }
-            }
-        });
-
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if(position != checkedPos) {
-                    if(checkedPos != -1) {
-                        checkable.set(checkedPos, false);
-                    }
-                    checkable.set(position, true);
-                    holder.checkBox.setChecked(true);
+                    data.get(position).setChecked(true);
                     checkedPos = position;
                 } else {
-                    holder.checkBox.setChecked(isChecked);
-                    checkable.set(position, isChecked);
+                    data.get(position).setChecked(false);
                     checkedPos = -1;
                 }
-
+                notifyDataSetChanged();
+                Toast.makeText(context, String.valueOf(checkedPos), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -128,47 +86,6 @@ public class TTMAdapterUTM extends RecyclerView.Adapter<TTMViewHolder>{
     public int getCheckedPosition() {
         return checkedPos;
     }
-
-    public ArrayList<Boolean> getCheckable() {
-        return checkable;
-    }
-
-    public void open(Boolean m) {
-
-        if(m) {
-
-            chk = true;
-
-        } else {
-
-            chk = false;
-
-        }
-
-        notifyItemRangeChanged(0, data.size());
-
-        notifyDataSetChanged();
-
-    }
-
-    public void selectAll(Boolean m) {
-
-        for(int i = 0; i < checkable.size(); i++) {
-
-            checkable.set(i, m);
-
-        }
-
-        selected = m;
-
-        chk = true;
-
-        notifyItemRangeChanged(0, data.size());
-
-        notifyDataSetChanged();
-
-    }
-
 
     @Override
     public int getItemCount() {
