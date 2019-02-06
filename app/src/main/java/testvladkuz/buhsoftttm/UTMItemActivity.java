@@ -1,14 +1,20 @@
 package testvladkuz.buhsoftttm;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -52,7 +58,10 @@ public class UTMItemActivity extends AppCompatActivity {
     Button add;
     TTMAdapterUTM adapter;
     ArrayList<String> urls = new ArrayList<>();
+    ArrayList<String> guids = new ArrayList<>();
+    LinearLayoutManager linearLayoutManager;
     ProgressBar progressBar;
+    TextView empty_text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +70,10 @@ public class UTMItemActivity extends AppCompatActivity {
 
         utm = findViewById(R.id.list);
         add = findViewById(R.id.add);
+        empty_text = findViewById(R.id.empty_text);
         progressBar = findViewById(R.id.progress);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager = new LinearLayoutManager(this);
         utm.setLayoutManager(linearLayoutManager);
 
         getUTN(db.getUserInfo("url"));
@@ -113,7 +123,11 @@ public class UTMItemActivity extends AppCompatActivity {
             }
             @Override
             protected void onPostExecute(String result){
-                showList(result);
+                if(!result.equals("")) {
+                    showList(result);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Возникли проблемы с подключением к УТМ.", Toast.LENGTH_SHORT).show();
+                }
             }
         }
         GetDataJSON g = new GetDataJSON();
@@ -122,7 +136,7 @@ public class UTMItemActivity extends AppCompatActivity {
 
     protected void showList(String fullxml){
         String textValue = "";
-        boolean inEntryHeader = false;
+        boolean inEntryHeader = false, inEntryURL = false;
 
         try {
             checkable.add(false);
@@ -141,16 +155,28 @@ public class UTMItemActivity extends AppCompatActivity {
                     // начало тэга
                     case XmlPullParser.START_TAG:
                         if ("url".equalsIgnoreCase(tagName)) {
+                            if(db.findTTNByFileId(parser.getAttributeValue(0)) == -1) {
+                                inEntryURL = true;
+                                guids.add(parser.getAttributeValue(0));
+                            }
+                        }
+                        if ("A".equalsIgnoreCase(tagName)) {
                             inEntryHeader = true;
                         }
                         break;
                     // конец тэга
                     case XmlPullParser.END_TAG:
                         if (inEntryHeader) {
-                            if ("url".equalsIgnoreCase(tagName)) {
-                                urls.add(textValue);
+                            if (inEntryURL) {
+                                if ("url".equalsIgnoreCase(tagName)) {
+                                    urls.add(textValue);
+                                    inEntryURL = false;
+                                }
+
+                            }
+                            if ("A".equalsIgnoreCase(tagName)) {
                                 inEntryHeader = false;
-                                getTTMInfo(textValue);
+                                getTTNs();
                             }
                         }
                         break;
@@ -165,7 +191,6 @@ public class UTMItemActivity extends AppCompatActivity {
                 // следующий элемент
                 parser.next();
             }
-
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -173,6 +198,17 @@ public class UTMItemActivity extends AppCompatActivity {
         }
     }
 
+    private void getTTNs() {
+        if(urls.size() != 0) {
+            for(int i =0; i < urls.size(); i++) {
+                getTTMInfo(urls.get(i));
+            }
+        } else {
+            progressBar.setVisibility(View.GONE);
+            empty_text.setVisibility(View.VISIBLE);
+        }
+
+    }
 
     public void getTTMInfo(final String url){
         class GetDataJSON extends AsyncTask<String, Void, String> {
@@ -212,7 +248,6 @@ public class UTMItemActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String result){
                 showTTMInfo(result);
-
             }
         }
         GetDataJSON g = new GetDataJSON();
@@ -259,7 +294,7 @@ public class UTMItemActivity extends AppCompatActivity {
                                 obj.setFsrar(textValue);
                             } else if ("Identity".equalsIgnoreCase(tagName)) {
                                 obj.setGuid(textValue);
-                            } else if ("NUMBER".equalsIgnoreCase(tagName) || "WBNUMBER".equalsIgnoreCase(tagName)) {
+                            } else if ("NUMBER".equalsIgnoreCase(tagName)) {
                                 obj.setTitle(textValue);
                             } else if ("DATE".equalsIgnoreCase(tagName)) {
                                 obj.setDate(textValue);
@@ -281,12 +316,12 @@ public class UTMItemActivity extends AppCompatActivity {
                 // следующий элемент
                 parser.next();
             }
-
-            ttms.get(0).setChecked(true);
-            adapter = new TTMAdapterUTM(this, ttms);
-
-            utm.setAdapter(adapter);
-            progressBar.setVisibility(View.GONE);
+            if(urls.size() == ttms.size()) {
+                ttms.get(0).setChecked(true);
+                adapter = new TTMAdapterUTM(this, ttms);
+                utm.setAdapter(adapter);
+                progressBar.setVisibility(View.GONE);
+            }
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -383,6 +418,8 @@ public class UTMItemActivity extends AppCompatActivity {
                                 inEntryHeader = false;
                                 obj.setStatus("0");
                                 obj.setId(futureId);
+                                obj.setType("1");
+                                obj.setFileid(guids.get(adapter.getCheckedPosition()));
                                 db.addNewTTN(obj);
                             } else if ("Shipper".equalsIgnoreCase(tagName)) {
                                 inEntryShipper = false;

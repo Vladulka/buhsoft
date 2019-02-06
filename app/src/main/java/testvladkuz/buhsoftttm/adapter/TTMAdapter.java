@@ -80,7 +80,7 @@ public class TTMAdapter extends RecyclerView.Adapter<TTMViewHolder>{
             holder.checkBox.setVisibility(View.GONE);
         }
 
-        holder.title.setText(data.get(position).getTitle());
+        holder.title.setText(data.get(position).getTitle() + " (" + data.get(position).getType() + ")");
         holder.date.setText(data.get(position).getDate());
         holder.shortName.setText(data.get(position).getShortname());
 
@@ -91,9 +91,9 @@ public class TTMAdapter extends RecyclerView.Adapter<TTMViewHolder>{
                 if(!chk) {
 
                     Intent intent = new Intent(context, ItemsActivity.class);
-                    intent.putExtra("title", String.valueOf(data.get(position).getTitle()));
-                    intent.putExtra("date", String.valueOf(data.get(position).getDate()));
-                    intent.putExtra("shortname", String.valueOf(data.get(position).getShortname()));
+                    intent.putExtra("title", data.get(position).getTitle());
+                    intent.putExtra("date", data.get(position).getDate());
+                    intent.putExtra("shortname", data.get(position).getShortname());
                     intent.putExtra("docid", String.valueOf(data.get(position).getId()));
                     intent.putExtra("result", "0");
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, holder.item, "title");

@@ -3,12 +3,12 @@ package testvladkuz.buhsoftttm.classes;
 public class TTM {
 
     int id;
-    private String title, fsrar, guid, date, inn, shortname, status;
+    private String title, fsrar, guid, date, inn, shortname, status, fileid, type;
     boolean checked;
 
     public TTM(){}
 
-    public TTM(int id, String title, String fsrar, String guid, String date, String inn, String shortname, String status){
+    public TTM(int id, String title, String fsrar, String guid, String date, String inn, String shortname, String status, String fileid, String type){
         this.id = id;
         this.title = title;
         this.fsrar = fsrar;
@@ -17,9 +17,11 @@ public class TTM {
         this.inn = inn;
         this.shortname = shortname;
         this.status = status;
+        this.fileid = fileid;
+        this.type = type;
     }
 
-    public TTM(String title, String fsrar, String guid, String date, String inn, String shortname, String status){
+    public TTM(String title, String fsrar, String guid, String date, String inn, String shortname, String status, String fileid, String type){
         this.title = title;
         this.fsrar = fsrar;
         this.guid = guid;
@@ -27,9 +29,11 @@ public class TTM {
         this.inn = inn;
         this.shortname = shortname;
         this.status = status;
+        this.fileid = fileid;
+        this.type = type;
     }
 
-    public TTM(String title, String fsrar, String guid, String date, String inn, String shortname, String status, boolean checked){
+    public TTM(String title, String fsrar, String guid, String date, String inn, String shortname, String status, String fileid, String type, boolean checked){
         this.title = title;
         this.fsrar = fsrar;
         this.guid = guid;
@@ -38,6 +42,8 @@ public class TTM {
         this.shortname = shortname;
         this.status = status;
         this.checked = checked;
+        this.fileid = fileid;
+        this.type = type;
     }
 
     ///////////////////////////////////////////////
@@ -116,6 +122,20 @@ public class TTM {
         this.checked = checked;
     }
 
+    public String getFileid(){
+        return this.fileid;
+    }
 
+    public void setFileid(String fileid){
+        this.fileid = fileid;
+    }
+
+    public String getType(){
+        return this.type;
+    }
+
+    public void setType(String type){
+        this.type = type;
+    }
 }
 

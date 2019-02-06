@@ -28,19 +28,6 @@ public class TTMAdapterUTM extends RecyclerView.Adapter<TTMViewHolder>{
     int checkedPos = 0;
     View v;
 
-    onCallOneFragmentFunctionsListener eventListener;
-
-    public interface onCallOneFragmentFunctionsListener{
-        void showAndHideButtons(boolean show);
-    }
-
-    public TTMAdapterUTM(Context context, ArrayList<TTM> data, onCallOneFragmentFunctionsListener eventListener) {
-        this.data = data;
-        this.context = context;
-        this.eventListener = eventListener;
-        db = new DatabaseHandler(context);
-    }
-
     public TTMAdapterUTM(Context context, ArrayList<TTM> data) {
         this.data = data;
         this.context = context;
@@ -90,5 +77,10 @@ public class TTMAdapterUTM extends RecyclerView.Adapter<TTMViewHolder>{
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    public void addNewItem(TTM item) {
+        data.add(item);
+        notifyItemInserted(data.size() - 1);
     }
 }

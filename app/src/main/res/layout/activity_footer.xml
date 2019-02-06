@@ -34,6 +34,7 @@
                 android:paddingRight="15dp"
                 android:paddingBottom="15dp"
                 android:src="@drawable/ic_photo_camera_black_24dp"
+                app:layout_collapseMode="parallax"
                 android:tint="#fff" />
 
             <ImageView
@@ -44,14 +45,14 @@
                 android:layout_centerVertical="false"
                 android:padding="15dp"
                 android:src="@drawable/ic_barcode_scan_white_24dp"
+                app:layout_collapseMode="parallax"
                 android:tint="#fff" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="parallax"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+                android:layout_height="55dp"
+                app:layout_collapseMode="parallax">
 
             </android.support.v7.widget.Toolbar>
 

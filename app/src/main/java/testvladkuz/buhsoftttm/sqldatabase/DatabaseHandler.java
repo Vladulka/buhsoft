@@ -17,8 +17,8 @@ import testvladkuz.buhsoftttm.classes.TTM;
 
 public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandler {
 
-    private static final int DATABASE_VERSION = 5;
-    private static final String DATABASE_NAME = "test1";
+    private static final int DATABASE_VERSION = 7;
+    private static final String DATABASE_NAME = "test3";
     private static final String MAIN = "main";
     private static final String FOOTER = "footer";
     private static final String ALCT = "alc";
@@ -32,6 +32,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     private static final String INN = "inn";
     private static final String SHORTNAME = "shortname";
     private static final String STATUS = "status";
+    private static final String FILEID = "fileid";
+    private static final String TYPE = "type";
 
     private static final String DOCID = "docid";
     private static final String ITEMID = "itemid";
@@ -61,7 +63,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     public void onCreate(SQLiteDatabase db) {
         String CREATE_INFO = "CREATE TABLE " + MAIN + "("
                 + ID + " INTEGER PRIMARY KEY," + TITLE + " TEXT,"
-                + FSRAR + " TEXT," + GUID + " TEXT," + DATE + " TEXT," + INN + " TEXT," + SHORTNAME + " TEXT," + STATUS + " TEXT" + ")";
+                + FSRAR + " TEXT," + GUID + " TEXT," + DATE + " TEXT," + INN + " TEXT," + SHORTNAME + " TEXT," + STATUS + " TEXT," + FILEID + " TEXT," + TYPE + " TEXT" + ")";
         db.execSQL(CREATE_INFO);
 
         CREATE_INFO = "CREATE TABLE " + FOOTER + "("
@@ -85,6 +87,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         db.execSQL("DROP TABLE IF EXISTS " + FOOTER);
         onCreate(db);
         db.execSQL("DROP TABLE IF EXISTS " + ALCT);
+        onCreate(db);
+        db.execSQL("DROP TABLE IF EXISTS " + PROFILE);
         onCreate(db);
     }
 
@@ -148,6 +152,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         values.put(INN, ttm.getInn());
         values.put(SHORTNAME, ttm.getShortname());
         values.put(STATUS, ttm.getShortname());
+        values.put(FILEID, ttm.getFileid());
+        values.put(TYPE, ttm.getType());
 
         db.insert(MAIN, null, values);
         db.close();
@@ -238,6 +244,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
                 obj.setInn(cursor.getString(5));
                 obj.setShortname(cursor.getString(6));
                 obj.setStatus(cursor.getString(7));
+                obj.setFileid(cursor.getString(8));
+                obj.setType(cursor.getString(9));
                 list.add(obj);
             } while (cursor.moveToNext());
         }
@@ -296,6 +304,26 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         }
 
         return inf;
+    }
+
+    @Override
+    public int findTTNByFileId(String fileId) {
+
+        String selectQuery = null;
+        selectQuery = "SELECT  * FROM " + MAIN + " WHERE " + FILEID + " = '" + fileId + "'";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if(cursor.getCount() == 0) {
+            return -1;
+        }
+        return 1;
+    }
+
+    @Override
+    public int findTTNByGuid(String fileId) {
+        return 0;
     }
 
     @Override

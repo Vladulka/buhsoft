@@ -13,6 +13,8 @@ public interface IDatabaseHandler {
     public void deleteTTN(String id);
     public ArrayList<TTM> getAllTTM();
     public int getTTNSize();
+    public int findTTNByFileId(String fileId);
+    public int findTTNByGuid(String fileId);
 
     public void addNewToFooter(Items items);
     public void deleteFooter(String id);

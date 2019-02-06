@@ -187,8 +187,10 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                                 if (inEntryHeader) {
                                     if ("Header".equalsIgnoreCase(tagName)) {
                                         inEntryHeader = false;
-                                        obj.setStatus("0");
                                         obj.setId(futureId);
+                                        obj.setStatus("0");
+                                        obj.setFileid("0");
+                                        obj.setType("0");
                                         db.addNewTTN(obj);
                                         adapter.addNewTTM(obj);
                                     } else if ("Shipper".equalsIgnoreCase(tagName)) {
@@ -207,7 +209,7 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                                         obj.setShortname(textValue);
                                     }
                                 }
-                                if (inEntryContent) {
+                                if (inEntryContent && inEntryHeader) {
                                     if ("Content".equalsIgnoreCase(tagName)) {
                                         inEntryContent = false;
                                     } else if ("Position".equalsIgnoreCase(tagName)) {
