@@ -261,10 +261,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        if(cursor.getCount() == 0) {
-            return null;
-        }
-
         if (cursor.moveToFirst()) {
             do {
                 Items obj = new Items();
@@ -322,8 +318,17 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     }
 
     @Override
-    public int findTTNByGuid(String fileId) {
-        return 0;
+    public int findTTNByGuid(String guid) {
+        String selectQuery = null;
+        selectQuery = "SELECT  * FROM " + MAIN + " WHERE " + GUID + " = '" + guid + "'";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if(cursor.getCount() == 0) {
+            return -1;
+        }
+        return 1;
     }
 
     @Override

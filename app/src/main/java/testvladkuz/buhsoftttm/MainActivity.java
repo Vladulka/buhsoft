@@ -54,23 +54,18 @@ public class MainActivity extends AppCompatActivity {
 
         db = new DatabaseHandler(this);
 
-
         if(db.getUsersSize() == 0) {
-            Toast.makeText(getApplicationContext(), "No", Toast.LENGTH_SHORT).show();
             db.addUserInfo(new Settings("url", ""));
         }
 
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-
-
     }
 
     @Override
@@ -78,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
                 } else {
                     // permission denied
                 }

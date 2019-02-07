@@ -81,7 +81,11 @@ public class UTMItemActivity extends AppCompatActivity {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getTTNItems(urls.get(adapter.getCheckedPosition()));
+                if(urls.size() != 0 && adapter.getCheckedPosition() != -1) {
+                    getTTNItems(urls.get(adapter.getCheckedPosition()));
+                } else {
+                    Toast.makeText(getApplicationContext(), "Вы не выбрали накладную.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -113,7 +117,7 @@ public class UTMItemActivity extends AppCompatActivity {
                     }
                     result = sb.toString();
                 } catch (Exception e) {
-                    // Oops
+                    return "";
                 }
                 finally {
                     try{if(inputStream != null)inputStream.close();}catch(Exception ignored){}
@@ -127,6 +131,9 @@ public class UTMItemActivity extends AppCompatActivity {
                     showList(result);
                 } else {
                     Toast.makeText(getApplicationContext(), "Возникли проблемы с подключением к УТМ.", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    empty_text.setText("Возникли проблемы с подключением к УТМ.");
+                    empty_text.setVisibility(View.VISIBLE);
                 }
             }
         }

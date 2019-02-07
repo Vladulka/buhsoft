@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -119,8 +120,13 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
         fab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), UTMItemActivity.class);
-                startActivity(intent);
+                if(db.getUserInfo("url").equals("")) {
+                    Toast.makeText(getActivity(), "Введите адрес УТМ в настройках", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(getActivity(), UTMItemActivity.class);
+                    startActivity(intent);
+                }
+
             }
         });
 
@@ -130,10 +136,13 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Uri uri = data.getData();
-//        Log.e(TAG, " result is "+ data + "  uri  "+ data.getData()+ " auth "+ data.getData().getAuthority()+ " path "+ data.getData().getPath());
+        Uri uri = null;
         String fullerror ="";
         String fullxml="";
+
+        if(data != null) {
+            uri = data.getData();
+        }
 
         if (requestCode == 101) {
             if (resultCode == RESULT_OK) {
@@ -153,7 +162,7 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                     parser.setInput(new StringReader(fullxml));
 
                     String textValue = "";
-                    boolean inEntryHeader = false, inEntryShipper = false, inEntryContent = false, inEntryProduct = false;
+                    boolean inEntryIdentity = false, inEntryHeader = false, inEntryShipper = false, inEntryContent = false, inEntryProduct = false;
                     TTM obj = new TTM();
                     Items items = new Items();
                     ALC alc = new ALC();
@@ -180,11 +189,18 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                                     inEntryContent = true;
                                 } else if ("Position".equalsIgnoreCase(tagName)) {
                                     inEntryProduct = true;
+                                } else if ("Identity".equalsIgnoreCase(tagName)) {
+                                    if(db.findTTNByGuid(textValue) == -1) {
+                                        obj.setGuid(textValue);
+                                        inEntryIdentity = true;
+                                    } else {
+                                        Toast.makeText(getActivity(), "Накладная уже была добавлена", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                                 break;
                             // конец тэга
                             case XmlPullParser.END_TAG:
-                                if (inEntryHeader) {
+                                if (inEntryHeader && inEntryIdentity) {
                                     if ("Header".equalsIgnoreCase(tagName)) {
                                         inEntryHeader = false;
                                         obj.setId(futureId);
@@ -197,8 +213,6 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                                         inEntryShipper = false;
                                     } else if ("ClientRegId".equalsIgnoreCase(tagName)) {
                                         obj.setFsrar(textValue);
-                                    } else if ("Identity".equalsIgnoreCase(tagName)) {
-                                        obj.setGuid(textValue);
                                     } else if ("NUMBER".equalsIgnoreCase(tagName)) {
                                         obj.setTitle(textValue);
                                     } else if ("DATE".equalsIgnoreCase(tagName)) {
@@ -209,7 +223,7 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                                         obj.setShortname(textValue);
                                     }
                                 }
-                                if (inEntryContent && inEntryHeader) {
+                                if (inEntryContent && inEntryIdentity) {
                                     if ("Content".equalsIgnoreCase(tagName)) {
                                         inEntryContent = false;
                                     } else if ("Position".equalsIgnoreCase(tagName)) {

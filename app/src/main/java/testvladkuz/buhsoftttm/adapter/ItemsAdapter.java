@@ -32,7 +32,6 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsViewHolder> {
 
     @Override
     public void onBindViewHolder(ItemsViewHolder holder, int position) {
-//        Toast.makeText(context, data.get(position).getAlccode(), Toast.LENGTH_SHORT).show();
         holder.progress.setMax(data.get(position).getNums());
         holder.progress.setProgress(Integer.valueOf(data.get(position).getFactnums()), true);
 
@@ -41,9 +40,6 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsViewHolder> {
 
         holder.fact.setText(data.get(position).getFactnums());
         holder.max.setText(String.valueOf(data.get(position).getNums()));
-
-//        Toast.makeText(context, data.get(position).getAlccode(), Toast.LENGTH_SHORT).show();
-
     }
 
     public void updateItem(int position) {

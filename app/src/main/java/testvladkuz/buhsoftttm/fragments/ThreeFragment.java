@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import testvladkuz.buhsoftttm.ItemsActivity;
@@ -29,6 +30,7 @@ public class ThreeFragment extends Fragment {
 
     Dialog dialog;
     TextView url_text;
+    LinearLayout url_layout;
     DatabaseHandler db;
 
     @Override
@@ -43,16 +45,22 @@ public class ThreeFragment extends Fragment {
 
         db = new DatabaseHandler(getActivity());
         url_text = v.findViewById(R.id.url);
+        url_layout = v.findViewById(R.id.url_layout);
 
-        url_text.setText(db.getUserInfo("url"));
+        if(!db.getUserInfo("url").equals("")) {
+            url_text.setText(db.getUserInfo("url"));
+        } else{
+            url_text.setText("Введите адрес УТМ");
+        }
 
-        url_text.setOnClickListener(new View.OnClickListener() {
+        url_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog = new Dialog(getActivity());
                 dialog.setContentView(R.layout.dialog_url);
 
                 final EditText url = dialog.findViewById(R.id.url);
+                url.setText(db.getUserInfo("url"));
 
                 Button current = dialog.findViewById(R.id.upload);
                 current.setOnClickListener(new View.OnClickListener() {

@@ -65,7 +65,6 @@ public class TTMAdapterUTM extends RecyclerView.Adapter<TTMViewHolder>{
                     checkedPos = -1;
                 }
                 notifyDataSetChanged();
-                Toast.makeText(context, String.valueOf(checkedPos), Toast.LENGTH_SHORT).show();
             }
         });
     }
