@@ -7,12 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import testvladkuz.buhsoftttm.adapter.ItemsAdapter;
 import testvladkuz.buhsoftttm.adapter.ItemsDialogAdapter;
@@ -27,6 +25,7 @@ public class ItemsActivity extends AppCompatActivity implements ItemsDialogAdapt
     Dialog dialog;
     ItemsDialogAdapter dialogAdapter;
     TextView title, subtitle, date;
+    String titleString, subtitleString, dateString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +38,16 @@ public class ItemsActivity extends AppCompatActivity implements ItemsDialogAdapt
         subtitle = findViewById(R.id.shortName);
         date = findViewById(R.id.date);
 
-        title.setText(getIntent().getStringExtra("title"));
-        subtitle.setText(getIntent().getStringExtra("shortname"));
-        date.setText(getIntent().getStringExtra("date"));
+        titleString = getIntent().getStringExtra("title");
+        subtitleString = getIntent().getStringExtra("shortname");
+        dateString = getIntent().getStringExtra("date");
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getIntent().getStringExtra("title"));
+        title.setText(titleString);
+        subtitle.setText(subtitleString);
+        date.setText(dateString);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(titleString);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -52,7 +55,8 @@ public class ItemsActivity extends AppCompatActivity implements ItemsDialogAdapt
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                Intent intent = new Intent(ItemsActivity.this, MainActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -69,6 +73,9 @@ public class ItemsActivity extends AppCompatActivity implements ItemsDialogAdapt
                 public void onClick(View view) {
                     Intent intent = new Intent(ItemsActivity.this, ScannerActivity.class);
                     intent.putExtra("type", "-1");
+                    intent.putExtra("title", titleString);
+                    intent.putExtra("shortname", subtitleString);
+                    intent.putExtra("date", dateString);
                     intent.putExtra("docid", getIntent().getStringExtra("docid"));
                     intent.putExtra("code", getIntent().getStringExtra("code"));
                     startActivity(intent);
@@ -89,7 +96,6 @@ public class ItemsActivity extends AppCompatActivity implements ItemsDialogAdapt
 //            dialog.show();
         }
 
-
         camera = findViewById(R.id.camera);
         scanner = findViewById(R.id.scanner);
 
@@ -104,7 +110,9 @@ public class ItemsActivity extends AppCompatActivity implements ItemsDialogAdapt
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ItemsActivity.this, ScannerActivity.class);
-                intent.putExtra("title", getIntent().getStringExtra("title"));
+                intent.putExtra("title", titleString);
+                intent.putExtra("shortname", subtitleString);
+                intent.putExtra("date", dateString);
                 intent.putExtra("docid", getIntent().getStringExtra("docid"));
                 intent.putExtra("type", "-2");
                 startActivity(intent);

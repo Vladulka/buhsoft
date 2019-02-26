@@ -1,19 +1,9 @@
 package testvladkuz.buhsoftttm.fragments;
 
-import android.annotation.SuppressLint;
-import android.content.ContentUris;
-import android.content.Context;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,12 +23,9 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 
-import testvladkuz.buhsoftttm.MainActivity;
 import testvladkuz.buhsoftttm.R;
 import testvladkuz.buhsoftttm.UTMItemActivity;
 import testvladkuz.buhsoftttm.adapter.TTMAdapter;
@@ -103,7 +90,7 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("*/*");
+                intent.setType("text/xml");
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 //intent.putExtra("browseCoa", itemToBrowse);
                 //Intent chooser = Intent.createChooser(intent, "Select a File to Upload");
@@ -126,7 +113,6 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                     Intent intent = new Intent(getActivity(), UTMItemActivity.class);
                     startActivity(intent);
                 }
-
             }
         });
 

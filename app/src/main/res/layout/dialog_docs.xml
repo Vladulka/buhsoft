@@ -13,25 +13,15 @@
         android:layout_alignParentStart="false" />
 
     <Button
-        android:id="@+id/close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/docs"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="Закрыть" />
-
-    <Button
         android:id="@+id/current"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/docs"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginTop="8dp"
         android:layout_toStartOf="@+id/close"
-        android:text="Сканировать штрих-код" />
+        android:background="#138F72"
+        android:text="Сканировать штрих-код"
+        android:textColor="#fff" />
 
     <TextView
         android:id="@+id/textView"

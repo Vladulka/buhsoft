@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ import testvladkuz.buhsoftttm.classes.TTM;
 public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandler {
 
     private static final int DATABASE_VERSION = 7;
-    private static final String DATABASE_NAME = "test3";
+    private static final String DATABASE_NAME = "test4";
     private static final String MAIN = "main";
     private static final String FOOTER = "footer";
     private static final String ALCT = "alc";
@@ -453,7 +452,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
                     pdf417 = "0" + pdf417;
                 }
             }
-            Toast.makeText(context, pdf417, Toast.LENGTH_LONG).show();
             selectQuery = "SELECT  * FROM " + FOOTER + " WHERE " + ALCCODE + " = '" + pdf417 + "' AND " + DOCID + " = '" + id + "'";
         } else {
             selectQuery = "SELECT  * FROM " + ALCT + " WHERE " + ALCMARK + " = '" + alc + "' AND " + DOCID + " = '" + id + "'";

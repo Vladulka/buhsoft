@@ -1,9 +1,6 @@
 package testvladkuz.buhsoftttm;
 
 import android.content.Intent;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -81,7 +78,6 @@ public class ScannerActivity extends AppCompatActivity implements MessageDialogF
         docid = getIntent().getStringExtra("docid");
 
         setContentView(R.layout.activity_scanner);
-//        setupToolbar();
 
         ViewGroup contentFrame = (ViewGroup) findViewById(R.id.content_frame);
         mScannerView = new ZXingScannerView(this);
@@ -173,65 +169,72 @@ public class ScannerActivity extends AppCompatActivity implements MessageDialogF
 
     @Override
     public void handleResult(Result rawResult) {
-        try {
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-            r.play();
-        } catch (Exception e) {
-        }
-
-        Intent intent = new Intent(ScannerActivity.this, ItemsActivity.class);
-        intent.putExtra("title", getIntent().getStringExtra("title"));
-        intent.putExtra("docid", docid);
+//        try {
+//            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+//            r.play();
+//        } catch (Exception e) {
+//        }
 
         if (getIntent().getStringExtra("type").equals("-1")) {
-            intent.putExtra("result", "-11");
-            getItemByCode(rawResult.getText());
+            if(!rawResult.getBarcodeFormat().toString().equals("EAN_13")) {
+                Toast.makeText(getApplicationContext(), "Произошла ошибка. Повторите сканирование.", Toast.LENGTH_LONG).show();
+                mScannerView.resumeCameraPreview(this);
+            } else {
+                getItemByCode(rawResult.getText());
+            }
+
         } else {
             String errorLevel = "0";
 
             String code = rawResult.getText();
-            Toast.makeText(getApplicationContext(), String.valueOf(code.length()), Toast.LENGTH_LONG).show();
 
-            if(code.length() == 68) {
-
+            if(rawResult.getBarcodeFormat().toString().equals("PDF_417")) {
                 String pdf417 = db.findALCByPDF417(rawResult.getText(), getIntent().getStringExtra("docid"), false);
                 if(!pdf417.equals("-2")) {
                     String alccode = db.findALCByPDF417(rawResult.getText(), getIntent().getStringExtra("docid"), true);
                     if(!alccode.equals("-1")) {
                         db.addNewALC(new ALC(getIntent().getStringExtra("docid"), alccode, rawResult.getText(), "1"));
+                        goToItemsActivity();
                     } else {
-                        errorLevel = "-1";
-                    }
+                        alccode = rawResult.getText().substring(3, 19);
+                        StringBuilder alc = new StringBuilder(new BigInteger(alccode, 36).toString());
+                        if(alc.length() < 20) {
+                            for(int i = 0; i < 20 - alc.length(); i++) {
+                                alc.insert(0, "0");
+                            }
+                        }
 
+                        getItemByAlc(rawResult.getText(), alc.toString());
+                    }
                 } else {
-                    errorLevel = "-2";
+                    Toast.makeText(getApplicationContext(), "Данный алко-код уже был отсканирован.", Toast.LENGTH_SHORT).show();
+                    mScannerView.resumeCameraPreview(this);
                 }
-            } else {
+            } else if(code.length() == 150) {
+                Intent intent = new Intent(ScannerActivity.this, ItemsActivity.class);
+                intent.putExtra("title", getIntent().getStringExtra("title"));
+                intent.putExtra("shortname", getIntent().getStringExtra("shortname"));
+                intent.putExtra("date", getIntent().getStringExtra("date"));
+                intent.putExtra("docid", getIntent().getStringExtra("docid"));
+                intent.putExtra("code", getIntent().getStringExtra("code"));
+
                 String matrix = db.findALCByMatrix(rawResult.getText(), getIntent().getStringExtra("docid"));
                 if(matrix.equals("-1")) {
-                    errorLevel = "-1";
+                    intent.putExtra("result", "-1");
+                    intent.putExtra("code", rawResult.getText());
+                    Toast.makeText(getApplicationContext(), "Данного алко-кода нет в накладной.", Toast.LENGTH_LONG).show();
                 } else if(matrix.equals("-2")) {
-                    errorLevel = "-2";
+                    intent.putExtra("result", "-2");
+                    Toast.makeText(getApplicationContext(), "Данный штрих-код уже был отсканирован.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Возникла ошибка сканирования.", Toast.LENGTH_LONG).show();
+                    intent.putExtra("result", "0");
                 }
+                startActivity(intent);
+
             }
-
-            if(errorLevel.equals("-2")) {
-                intent.putExtra("result", "-2");
-                Toast.makeText(getApplicationContext(), "Данный штрих-код уже был отсканирован.", Toast.LENGTH_SHORT).show();
-
-            } else if(errorLevel.equals("-1")) {
-                intent.putExtra("result", "-1");
-                intent.putExtra("code", rawResult.getText());
-                Toast.makeText(getApplicationContext(), "Данного штрих-кода нет в накладной.", Toast.LENGTH_LONG).show();
-
-            } else{
-                intent.putExtra("result", "0");
-            }
-
-
         }
-        startActivity(intent);
     }
 
     public void closeMessageDialog() {
@@ -295,6 +298,95 @@ public class ScannerActivity extends AppCompatActivity implements MessageDialogF
         closeFormatsDialog();
     }
 
+    public void getItemByAlc(final String code, final String alc){
+        class GetDataJSON extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... params) {
+                DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
+                HttpPost httppost = new HttpPost("https://online.buhsoft.ru/getbarcod/barcod_off.php");
+                //будем передавать два параметра
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
+
+                nameValuePairs.add(new BasicNameValuePair("kodexch","0015"));
+                nameValuePairs.add(new BasicNameValuePair("kod_bd","android"));
+                nameValuePairs.add(new BasicNameValuePair("alccode", alc));
+
+                InputStream inputStream = null;
+                String result = null;
+                try {
+                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
+                    HttpResponse response = httpclient.execute(httppost);
+                    HttpEntity entity = response.getEntity();
+
+                    inputStream = entity.getContent();
+                    // json is UTF-8 by default
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
+                    StringBuilder sb = new StringBuilder();
+
+                    String line = null;
+                    while ((line = reader.readLine()) != null)
+                    {
+                        sb.append(line).append("\n");
+                    }
+                    result = sb.toString();
+                } catch (Exception e) {
+                    // Oops
+                }
+                finally {
+                    try{if(inputStream != null)inputStream.close();}catch(Exception ignored){}
+                }
+                return result;
+
+            }
+            @Override
+            protected void onPostExecute(String result){
+                myJSON = result;
+                showAlcList(code, alc);
+            }
+        }
+        GetDataJSON g = new GetDataJSON();
+        g.execute();
+    }
+
+    void showAlcList(String code, String alc){
+        String name = null, barcod = null;
+        int i = db.getItemsSize();
+
+        try {
+            JSONObject jsonObj = new JSONObject(myJSON);
+            ans = jsonObj.getJSONArray("result");
+
+            if(ans.getJSONObject(0).getString("name").equals("")) {
+                Toast.makeText(getApplicationContext(), "Товара с данным алко - кодом нет в базе данных.", Toast.LENGTH_LONG).show();
+                mScannerView.resumeCameraPreview(this);
+            } else {
+                name = ans.getJSONObject(0).getString("name");
+                barcod = ans.getJSONObject(0).getString("barkod");
+                db.addNewToFooter(new Items(i, docid, name, alc, "", "", "", "", "", "",1, "1", barcod));
+                db.addNewALC(new ALC(docid, String.valueOf(i), code, "1"));
+                if(i < db.getItemsSize()) {
+                    Toast.makeText(getApplicationContext(), "Данного алко-кода нет в накладной. Он был добавлен в контрафакт.", Toast.LENGTH_LONG).show();
+                    goToItemsActivity();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Произошла ошибка. Повторите сканирование.", Toast.LENGTH_LONG).show();
+                    mScannerView.resumeCameraPreview(this);
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    void goToItemsActivity() {
+        Intent intent = new Intent(ScannerActivity.this, ItemsActivity.class);
+        intent.putExtra("title", getIntent().getStringExtra("title")).putExtra("shortname", getIntent().getStringExtra("shortname")).putExtra("date", getIntent().getStringExtra("date")).putExtra("docid", getIntent().getStringExtra("docid")).putExtra("code", getIntent().getStringExtra("code")).putExtra("result", "-11");
+        startActivity(intent);
+    }
+
 
     public void getItemByCode(final String code){
         class GetDataJSON extends AsyncTask<String, Void, String> {
@@ -350,13 +442,37 @@ public class ScannerActivity extends AppCompatActivity implements MessageDialogF
     protected void showList(final String code){
         try {
             JSONObject jsonObj = new JSONObject(myJSON);
-            ans = jsonObj.getJSONArray("result");
-            JSONObject object = ans.getJSONObject(0);
-            int i = db.getItemsSize();
-            Toast.makeText(getApplicationContext(), db.findALC(code, docid), Toast.LENGTH_LONG).show();
 
-            db.addNewToFooter(new Items(i, docid, object.getString("name"), object.getString("alccode"), "", "", "", "", "", "",1, "1", code));
-            db.addNewALC(new ALC(docid, String.valueOf(i), getIntent().getStringExtra("code"), "1"));
+            Intent intent = new Intent(ScannerActivity.this, ItemsActivity.class);
+            intent.putExtra("title", getIntent().getStringExtra("title"));
+            intent.putExtra("shortname", getIntent().getStringExtra("shortname"));
+            intent.putExtra("date", getIntent().getStringExtra("date"));
+            intent.putExtra("docid", getIntent().getStringExtra("docid"));
+            intent.putExtra("code", getIntent().getStringExtra("code"));
+            intent.putExtra("result", "-11");
+
+            if(jsonObj.getString("result").equals("")) {
+                Toast.makeText(getApplicationContext(), "Товара с данным штрих - кодом нет в базе данных.", Toast.LENGTH_LONG).show();
+                mScannerView.resumeCameraPreview(this);
+            } else {
+                ans = jsonObj.getJSONArray("result");
+                JSONObject object = ans.getJSONObject(0);
+
+                int i = db.getItemsSize();
+
+                db.addNewToFooter(new Items(i, docid, object.getString("name"), object.getString("alccode"), "", "", "", "", "", "",1, "1", code));
+                db.addNewALC(new ALC(docid, String.valueOf(i), getIntent().getStringExtra("code"), "1"));
+
+                if(i < db.getItemsSize()) {
+                    Toast.makeText(getApplicationContext(), "Товар был добавлен в накладную.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Произошла ошибка. Повторите сканирование.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            startActivity(intent);
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
