@@ -16,8 +16,8 @@ import testvladkuz.buhsoftttm.classes.TTM;
 
 public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandler {
 
-    private static final int DATABASE_VERSION = 7;
-    private static final String DATABASE_NAME = "test4";
+    private static final int DATABASE_VERSION = 8;
+    private static final String DATABASE_NAME = "test7";
     private static final String MAIN = "main";
     private static final String FOOTER = "footer";
     private static final String ALCT = "alc";
@@ -66,7 +66,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         db.execSQL(CREATE_INFO);
 
         CREATE_INFO = "CREATE TABLE " + FOOTER + "("
-                + ID + " INTEGER PRIMARY KEY," + DOCID + " TEXT," + TITLE + " TEXT," + ALCCODE + " TEXT," + CAPACITY + " TEXT," + VOLUME + " TEXT," + FAR1 + " TEXT," + FAR2 + " TEXT," + NUMS + " TEXT," + FACTNUMS + " TEXT,"  + BARCODE + " TEXT" + ")";
+                + ID + " INTEGER PRIMARY KEY," + DOCID + " TEXT," + TITLE + " TEXT," + ALCCODE + " TEXT," + CAPACITY + " TEXT," + VOLUME + " TEXT," + FAR1 + " TEXT," + FAR2 + " TEXT," + NUMS + " TEXT," + FACTNUMS + " TEXT,"  + BARCODE + " TEXT," + TYPE + " TEXT" + ")";
         db.execSQL(CREATE_INFO);
 
         CREATE_INFO = "CREATE TABLE " + ALCT + "("
@@ -180,6 +180,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         values.put(NUMS, String.valueOf(items.getNums()));
         values.put(FACTNUMS, items.getFactnums());
         values.put(BARCODE, items.getCode());
+        values.put(TYPE, items.getType());
 
         db.insert(FOOTER, null, values);
         db.close();
@@ -275,6 +276,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
                 obj.setNums(Integer.parseInt(cursor.getString(8)));
                 obj.setFactnums(cursor.getString(9));
                 obj.setCode(cursor.getString(10));
+                obj.setType(cursor.getString(11));
 
                 list.add(obj);
             } while (cursor.moveToNext());
@@ -414,7 +416,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
 
         if (cursor.moveToFirst()) {
             id_alc = cursor.getString(0);
-            if(cursor.getString(4).equals("0")) {
+            if(cursor.getString(4).equals("1")) {
                 return "-2";
             } else {
                 ContentValues values = new ContentValues();

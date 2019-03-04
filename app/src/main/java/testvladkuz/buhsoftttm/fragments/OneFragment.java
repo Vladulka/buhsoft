@@ -216,6 +216,7 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                                         inEntryProduct = false;
                                         items.setCode("");
                                         items.setDocid(String.valueOf(futureId));
+                                        items.setType("0");
                                         db.addNewToFooter(items);
                                         futuredIdItem++;
                                     } else if ("FullName".equalsIgnoreCase(tagName) && tagPref.equals("pref")) {

@@ -14,8 +14,11 @@ import testvladkuz.buhsoftttm.classes.Items;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsViewHolder> {
 
+    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_ERROR = 1;
     private ArrayList<Items> data;
     Context context;
+    View v;
 
     public ItemsAdapter(Context context, ArrayList<Items> data) {
         this.data = data;
@@ -25,8 +28,19 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsViewHolder> {
     @Override
     public ItemsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.footer_item, parent, false);
+        if (viewType == TYPE_ITEM) {
+            v = inflater.inflate(R.layout.footer_item, parent, false);
+        } else if (viewType == TYPE_ERROR) {
+            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.footer_item_error, parent, false);
+        }
         return new ItemsViewHolder(v);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (data.get(position).getType().equals("1"))
+            return TYPE_ERROR;
+        return TYPE_ITEM;
     }
 
     @Override
@@ -55,5 +69,4 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsViewHolder> {
         data.add(items);
         notifyDataSetChanged();
     }
-
 }

@@ -1,11 +1,9 @@
 package testvladkuz.buhsoftttm.fragments;
 
 import android.app.Dialog;
-import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +11,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import testvladkuz.buhsoftttm.ItemsActivity;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+
+import cz.msebera.android.httpclient.HttpEntity;
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.client.methods.HttpGet;
+import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
+import cz.msebera.android.httpclient.params.BasicHttpParams;
 import testvladkuz.buhsoftttm.R;
-import testvladkuz.buhsoftttm.ScannerActivity;
-import testvladkuz.buhsoftttm.UTMItemActivity;
-import testvladkuz.buhsoftttm.adapter.ItemsDialogAdapter;
 import testvladkuz.buhsoftttm.classes.Settings;
 import testvladkuz.buhsoftttm.sqldatabase.DatabaseHandler;
 
@@ -66,9 +72,15 @@ public class ThreeFragment extends Fragment {
                 current.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        db.updateUserInfo(new Settings("url", url.getText().toString()));
-                        url_text.setText(url.getText().toString());
+
+                        String urlString = url.getText().toString();
+
+                        checkStatus(urlString);
+
+                        db.updateUserInfo(new Settings("url", urlString));
+                        url_text.setText(urlString);
                         dialog.dismiss();
+
                     }
                 });
                 dialog.show();
@@ -76,6 +88,52 @@ public class ThreeFragment extends Fragment {
         });
 
         return v;
+    }
+
+    public void checkStatus(final String url){
+        class GetDataJSON extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... params) {
+                DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
+                HttpGet httppost = new HttpGet(url);
+                //будем передавать два параметра
+
+                InputStream inputStream = null;
+                String result = null;
+                try {
+                    HttpResponse response = httpclient.execute(httppost);
+                    HttpEntity entity = response.getEntity();
+
+                    inputStream = entity.getContent();
+                    // json is UTF-8 by default
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
+                    StringBuilder sb = new StringBuilder();
+
+                    String line = null;
+                    while ((line = reader.readLine()) != null)
+                    {
+                        sb.append(line).append("\n");
+                    }
+                    result = sb.toString();
+                } catch (Exception e) {
+                    return "-1";
+                }
+                finally {
+                    try{if(inputStream != null)inputStream.close();}catch(Exception ignored){}
+                }
+                return result;
+
+            }
+            @Override
+            protected void onPostExecute(String result){
+                if(result.equals("-1") || result.equals("")) {
+                    Toast.makeText(getActivity(), "Ошибка подключения. УТМ недоступна", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        GetDataJSON g = new GetDataJSON();
+        g.execute();
     }
 
 }

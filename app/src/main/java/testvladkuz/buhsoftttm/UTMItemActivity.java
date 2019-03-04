@@ -240,7 +240,11 @@ public class UTMItemActivity extends AppCompatActivity {
             }
             @Override
             protected void onPostExecute(String result){
-                showTTMInfo(result);
+                if(result.equals("")) {
+                    Toast.makeText(getApplicationContext(), "Ошибка подключения. УТМ недоступна", Toast.LENGTH_SHORT).show();
+                } else {
+                    showTTMInfo(result);
+                }
             }
         }
         GetDataJSON g = new GetDataJSON();
@@ -360,7 +364,6 @@ public class UTMItemActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String result){
                 addTTNItem(result);
-
             }
         }
         GetDataJSON g = new GetDataJSON();
@@ -436,6 +439,7 @@ public class UTMItemActivity extends AppCompatActivity {
                             } else if ("Position".equalsIgnoreCase(tagName)) {
                                 inEntryProduct = false;
                                 items.setCode("");
+                                items.setType("0");
                                 items.setDocid(String.valueOf(futureId));
                                 db.addNewToFooter(items);
                                 futuredIdItem++;

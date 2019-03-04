@@ -3,7 +3,7 @@ package testvladkuz.buhsoftttm.classes;
 public class Items {
 
     int id;
-    String docid, title, alccode, capacity, volume, shortname, far1, far2, alcmark, factnums, code;
+    String docid, title, alccode, capacity, volume, shortname, far1, far2, alcmark, factnums, code, type;
     int nums;
     public Items(){
     }
@@ -13,7 +13,7 @@ public class Items {
         this.title = title;
     }
 
-    public Items(int id, String docid, String title, String alccode, String capacity, String volume, String shortname, String far1, String far2, String alcmark, int nums, String factnums, String code){
+    public Items(int id, String docid, String title, String alccode, String capacity, String volume, String shortname, String far1, String far2, String alcmark, int nums, String factnums, String code, String type){
         this.id = id;
         this.docid = docid;
         this.title = title;
@@ -27,9 +27,10 @@ public class Items {
         this.nums = nums;
         this.factnums = factnums;
         this.code = code;
+        this.type = type;
     }
 
-    public Items(String docid, String title, String alccode, String capacity, String volume, String shortname, String far1, String far2, String alcmark, int nums, String factnums, String code){
+    public Items(String docid, String title, String alccode, String capacity, String volume, String shortname, String far1, String far2, String alcmark, int nums, String factnums, String code, String type){
         this.docid = docid;
         this.title = title;
         this.alccode = alccode;
@@ -42,6 +43,7 @@ public class Items {
         this.nums = nums;
         this.factnums = factnums;
         this.code = code;
+        this.type = type;
     }
 
     public int getId(){
@@ -146,6 +148,14 @@ public class Items {
 
     public void setCode(String code){
         this.code = code;
+    }
+
+    public String getType(){
+        return this.type;
+    }
+
+    public void setType(String type){
+        this.type = type;
     }
 
 }

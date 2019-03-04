@@ -233,6 +233,9 @@ public class ScannerActivity extends AppCompatActivity implements MessageDialogF
                 }
                 startActivity(intent);
 
+            } else {
+                Toast.makeText(getApplicationContext(), "Данный формат штрих - кода не поддерживается. Повторите попытку.", Toast.LENGTH_LONG).show();
+                mScannerView.resumeCameraPreview(this);
             }
         }
     }
@@ -363,11 +366,11 @@ public class ScannerActivity extends AppCompatActivity implements MessageDialogF
             } else {
                 name = ans.getJSONObject(0).getString("name");
                 barcod = ans.getJSONObject(0).getString("barkod");
-                db.addNewToFooter(new Items(i, docid, name, alc, "", "", "", "", "", "",1, "1", barcod));
+                db.addNewToFooter(new Items(i, docid, name, alc, "", "", "", "", "", "",1, "1", barcod, "1"));
                 db.addNewALC(new ALC(docid, String.valueOf(i), code, "1"));
                 if(i < db.getItemsSize()) {
                     Toast.makeText(getApplicationContext(), "Данного алко-кода нет в накладной. Он был добавлен в контрафакт.", Toast.LENGTH_LONG).show();
-                    goToItemsActivity();
+                    mScannerView.resumeCameraPreview(this);
                 } else {
                     Toast.makeText(getApplicationContext(), "Произошла ошибка. Повторите сканирование.", Toast.LENGTH_LONG).show();
                     mScannerView.resumeCameraPreview(this);
@@ -450,6 +453,7 @@ public class ScannerActivity extends AppCompatActivity implements MessageDialogF
             intent.putExtra("docid", getIntent().getStringExtra("docid"));
             intent.putExtra("code", getIntent().getStringExtra("code"));
             intent.putExtra("result", "-11");
+            startActivity(intent);
 
             if(jsonObj.getString("result").equals("")) {
                 Toast.makeText(getApplicationContext(), "Товара с данным штрих - кодом нет в базе данных.", Toast.LENGTH_LONG).show();
@@ -460,7 +464,7 @@ public class ScannerActivity extends AppCompatActivity implements MessageDialogF
 
                 int i = db.getItemsSize();
 
-                db.addNewToFooter(new Items(i, docid, object.getString("name"), object.getString("alccode"), "", "", "", "", "", "",1, "1", code));
+                db.addNewToFooter(new Items(i, docid, object.getString("name"), object.getString("alccode"), "", "", "", "", "", "",1, "1", code, "1"));
                 db.addNewALC(new ALC(docid, String.valueOf(i), getIntent().getStringExtra("code"), "1"));
 
                 if(i < db.getItemsSize()) {
@@ -470,12 +474,14 @@ public class ScannerActivity extends AppCompatActivity implements MessageDialogF
                 }
             }
 
-            startActivity(intent);
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        goToItemsActivity();
+    }
 }

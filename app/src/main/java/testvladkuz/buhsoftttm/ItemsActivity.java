@@ -8,15 +8,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import testvladkuz.buhsoftttm.adapter.ItemsAdapter;
 import testvladkuz.buhsoftttm.adapter.ItemsDialogAdapter;
+import testvladkuz.buhsoftttm.fragments.BottomSheetFragment;
 import testvladkuz.buhsoftttm.sqldatabase.DatabaseHandler;
 
-public class ItemsActivity extends AppCompatActivity implements ItemsDialogAdapter.onCallItemsActivityFunctionsListener {
+public class ItemsActivity extends AppCompatActivity implements  BottomSheetFragment.onEventListenerFragment {
 
     DatabaseHandler db;
     RecyclerView list;
@@ -61,30 +61,21 @@ public class ItemsActivity extends AppCompatActivity implements ItemsDialogAdapt
         });
 
         if(getIntent().getStringExtra("result").equals("-1")) {
-            dialog = new Dialog(this);
-            dialog.setContentView(R.layout.dialog_docs);
 
-            RecyclerView docs = dialog.findViewById(R.id.docs);
-            docs.setLayoutManager(new LinearLayoutManager(this));
 
-            Button current = dialog.findViewById(R.id.current);
-            current.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(ItemsActivity.this, ScannerActivity.class);
-                    intent.putExtra("type", "-1");
-                    intent.putExtra("title", titleString);
-                    intent.putExtra("shortname", subtitleString);
-                    intent.putExtra("date", dateString);
-                    intent.putExtra("docid", getIntent().getStringExtra("docid"));
-                    intent.putExtra("code", getIntent().getStringExtra("code"));
-                    startActivity(intent);
-                }
-            });
+            BottomSheetFragment bottomSheetDialogFragment = new BottomSheetFragment();
 
-            dialogAdapter = new ItemsDialogAdapter(this, db.getAllItems(getIntent().getStringExtra("docid")),this, getIntent().getStringExtra("docid"), getIntent().getStringExtra("code"));
-            docs.setAdapter(dialogAdapter);
-            dialog.show();
+            Bundle bundle = new Bundle();
+            bundle.putString("type", "-1");
+            bundle.putString("title", titleString);
+            bundle.putString("shortname", subtitleString);
+            bundle.putString("date", dateString);
+            bundle.putString("docid", getIntent().getStringExtra("docid"));
+            bundle.putString("code", getIntent().getStringExtra("code"));
+
+            bottomSheetDialogFragment.setArguments(bundle);
+
+            bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
         } else if(getIntent().getStringExtra("result").equals("-3")) {
 //            dialog = new Dialog(this);
 //            dialog.setContentView(R.layout.dialog_docs);
@@ -118,17 +109,23 @@ public class ItemsActivity extends AppCompatActivity implements ItemsDialogAdapt
                 startActivity(intent);
             }
         });
+
+        scanner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ItemsActivity.this, HIDScannerActivity.class);
+                intent.putExtra("title", titleString);
+                intent.putExtra("shortname", subtitleString);
+                intent.putExtra("date", dateString);
+                intent.putExtra("docid", getIntent().getStringExtra("docid"));
+                intent.putExtra("type", "-2");
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
-    public void showDialogView(boolean show) {
-        if(!show) {
-            dialog.hide();
-        }
-    }
-
-    @Override
-    public void updateItem(int position) {
+    public void onCheckedElement(int position) {
         adapter.updateItem(position);
     }
 //
