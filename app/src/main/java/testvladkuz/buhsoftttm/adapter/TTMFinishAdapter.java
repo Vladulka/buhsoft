@@ -18,7 +18,7 @@ import testvladkuz.buhsoftttm.adapter.holders.TTMViewHolder;
 import testvladkuz.buhsoftttm.classes.TTM;
 import testvladkuz.buhsoftttm.sqldatabase.DatabaseHandler;
 
-public class TTMAdapter extends RecyclerView.Adapter<TTMViewHolder>{
+public class TTMFinishAdapter extends RecyclerView.Adapter<TTMViewHolder>{
 
     private ArrayList<TTM> data;
     private ArrayList<Boolean> checkable;
@@ -34,7 +34,7 @@ public class TTMAdapter extends RecyclerView.Adapter<TTMViewHolder>{
 
     }
 
-    public TTMAdapter(Context context, ArrayList<TTM> data, Boolean check, ArrayList<Boolean> checked, onCallOneFragmentFunctionsListener eventListener) {
+    public TTMFinishAdapter(Context context, ArrayList<TTM> data, Boolean check, ArrayList<Boolean> checked, onCallOneFragmentFunctionsListener eventListener) {
         this.data = data;
         this.chk = check;
         this.context = context;
@@ -43,7 +43,7 @@ public class TTMAdapter extends RecyclerView.Adapter<TTMViewHolder>{
         db = new DatabaseHandler(context);
     }
 
-    public TTMAdapter(Context context, ArrayList<TTM> data, Boolean check, ArrayList<Boolean> checked) {
+    public TTMFinishAdapter(Context context, ArrayList<TTM> data, Boolean check, ArrayList<Boolean> checked) {
         this.data = data;
         this.chk = check;
         this.context = context;
@@ -51,7 +51,7 @@ public class TTMAdapter extends RecyclerView.Adapter<TTMViewHolder>{
         db = new DatabaseHandler(context);
     }
 
-    public TTMAdapter(Context context, ArrayList<TTM> data, Boolean check) {
+    public TTMFinishAdapter(Context context, ArrayList<TTM> data, Boolean check) {
         this.data = data;
         this.chk = check;
         this.context = context;

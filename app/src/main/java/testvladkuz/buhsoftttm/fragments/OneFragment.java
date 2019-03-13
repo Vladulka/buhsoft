@@ -7,11 +7,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -44,10 +44,10 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
     }
 
     RecyclerView list;
-    String TAG = "APP";
     public String  actualfilepath="";
     ArrayList<TTM> items = new ArrayList<>();
     ArrayList<Boolean> checkable = new ArrayList<Boolean>();
+    TextView textNoTTNs;
 
     TTMAdapter adapter;
     DatabaseHandler db;
@@ -71,6 +71,7 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
         select = v.findViewById(R.id.selectall);
         done = v.findViewById(R.id.done);
         edit = v.findViewById(R.id.edit);
+        textNoTTNs = v.findViewById(R.id.text_no_ttns);
 
         list = v.findViewById(R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -78,9 +79,11 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
 
         items = db.getAllTTM();
 
-        for (int i = 0; i < items.size(); i++) {
-            checkable.add(false);
-        }
+        if(items.size() == 0)
+            textNoTTNs.setVisibility(View.VISIBLE);
+        else
+            for (int i = 0; i < items.size(); i++)
+                checkable.add(false);
 
         adapter = new TTMAdapter(getActivity(), items, false, checkable, this);
         list.setAdapter(adapter);
@@ -115,7 +118,6 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                 }
             }
         });
-
         return v;
     }
 
@@ -159,7 +161,6 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
 
                         String tagName = parser.getName();
                         String tagPref = parser.getPrefix();
-//                        Toast.makeText(getApplicationContext(), tagName, Toast.LENGTH_SHORT).show();
 
                         switch (parser.getEventType()) {
                             // начало документа
@@ -264,10 +265,11 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
                     }
 
                 } catch (Exception e) {
-                    Log.e(TAG, " read errro " + e.toString());
+                    Toast.makeText(getActivity(), "Проблемы с чтением накладной. Повторите попытку.", Toast.LENGTH_LONG).show();
                 }
             }
         }
+        textNoTTNs.setVisibility(View.GONE);
         menu.close(false);
     }
 
@@ -302,18 +304,11 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
 
                             ArrayList<Boolean> ch = adapter.getCheckable();
 
-                            for(int i = ch.size() - 1; i >= 0; i--) {
-
-                                if(ch.get(i)) {
-
+                            for(int i = ch.size() - 1; i >= 0; i--)
+                                if(ch.get(i))
                                     adapter.deleteItems(i);
 
-                                }
-
-                            }
-
                             adapter.selectAll(false);
-
                         }
 
                     });
@@ -335,11 +330,10 @@ public class OneFragment extends Fragment implements TTMAdapter.onCallOneFragmen
             select.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(adapter.getSelected()) {
+                    if(adapter.getSelected())
                         adapter.selectAll(false);
-                    } else {
+                    else
                         adapter.selectAll(true);
-                    }
                 }
             });
         } else {

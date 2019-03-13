@@ -14,10 +14,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.HttpResponse;
@@ -95,8 +95,16 @@ public class ThreeFragment extends Fragment {
 
             @Override
             protected String doInBackground(String... params) {
+
+                String thePath = null;
+                try {
+                    thePath = URLEncoder.encode(url, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
                 DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-                HttpGet httppost = new HttpGet(url);
+                HttpGet httppost = new HttpGet(thePath);
                 //будем передавать два параметра
 
                 InputStream inputStream = null;

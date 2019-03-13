@@ -228,7 +228,7 @@ public class ScannerActivity extends AppCompatActivity implements MessageDialogF
                     intent.putExtra("result", "-2");
                     Toast.makeText(getApplicationContext(), "Данный штрих-код уже был отсканирован.", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Возникла ошибка сканирования.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Товар отсканирован.", Toast.LENGTH_LONG).show();
                     intent.putExtra("result", "0");
                 }
                 startActivity(intent);

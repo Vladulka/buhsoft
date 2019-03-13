@@ -12,9 +12,11 @@ public interface IDatabaseHandler {
     public void addNewTTN(TTM ttm);
     public void deleteTTN(String id);
     public ArrayList<TTM> getAllTTM();
+    public ArrayList<TTM> getFinishTTM();
     public int getTTNSize();
     public int findTTNByFileId(String fileId);
     public int findTTNByGuid(String fileId);
+    public void updateTTNById(String fileId);
 
     public void addNewToFooter(Items items);
     public void deleteFooter(String id);
@@ -25,11 +27,13 @@ public interface IDatabaseHandler {
 
     public void addNewALC(ALC alc);
     public void deleteALC(String id);
+    public int getALCSize(String id);
     public String findALC(String alc, String id);
     public String findALCByMatrix(String alc, String id);
     public String findALCByPDF417(String alc, String id, boolean type);
     public String findALCByShtrih(String alc, String id);
     public void updateAlcStatus(String alc);
+    public ArrayList<ALC> getAllALCByShare(String id);
 
     public void addUserInfo(Settings info);
     public String getUserInfo(String info);

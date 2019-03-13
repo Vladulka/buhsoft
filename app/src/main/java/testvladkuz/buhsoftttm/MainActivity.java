@@ -13,15 +13,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import testvladkuz.buhsoftttm.adapter.TTMAdapter;
 import testvladkuz.buhsoftttm.classes.Settings;
 import testvladkuz.buhsoftttm.fragments.OneFragment;
 import testvladkuz.buhsoftttm.fragments.ThreeFragment;
@@ -42,13 +37,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         int permissionStatusCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        int permissionStatusReadState = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int permissionStatusWriteState = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permissionStatusGroupStorage = ContextCompat.checkSelfPermission(this, Manifest.permission_group.STORAGE);
 
-        int permissionStatusPhone = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-
-        if (permissionStatusCamera == PackageManager.PERMISSION_GRANTED && permissionStatusPhone == PackageManager.PERMISSION_GRANTED) {
+        if (permissionStatusCamera == PackageManager.PERMISSION_GRANTED && permissionStatusReadState == PackageManager.PERMISSION_GRANTED && permissionStatusWriteState == PackageManager.PERMISSION_GRANTED && permissionStatusGroupStorage == PackageManager.PERMISSION_GRANTED) {
 
         } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE},
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission_group.STORAGE},
                     REQUEST_CODE);
         }
 

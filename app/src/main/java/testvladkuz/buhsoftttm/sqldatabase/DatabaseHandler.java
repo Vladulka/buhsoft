@@ -62,7 +62,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     public void onCreate(SQLiteDatabase db) {
         String CREATE_INFO = "CREATE TABLE " + MAIN + "("
                 + ID + " INTEGER PRIMARY KEY," + TITLE + " TEXT,"
-                + FSRAR + " TEXT," + GUID + " TEXT," + DATE + " TEXT," + INN + " TEXT," + SHORTNAME + " TEXT," + STATUS + " TEXT," + FILEID + " TEXT," + TYPE + " TEXT" + ")";
+                + FSRAR + " TEXT," + GUID + " TEXT," + DATE + " TEXT," + INN + " TEXT," + SHORTNAME + " TEXT," + STATUS + " INTEGER," + FILEID + " TEXT," + TYPE + " TEXT" + ")";
         db.execSQL(CREATE_INFO);
 
         CREATE_INFO = "CREATE TABLE " + FOOTER + "("
@@ -124,6 +124,23 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     }
 
     @Override
+    public int getALCSize(String id) {
+        int i = 0;
+        String selectQuery = "SELECT  * FROM " + ALCT + " WHERE " + DOCID + " = " + id + " AND " + STATUS + " = " + 1;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                i++;
+            } while (cursor.moveToNext());
+        }
+
+        return i;
+    }
+
+    @Override
     public int getUsersSize() {
         int i = 0;
         String selectQuery = "SELECT  * FROM " + PROFILE;
@@ -150,7 +167,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
         values.put(DATE, ttm.getDate());
         values.put(INN, ttm.getInn());
         values.put(SHORTNAME, ttm.getShortname());
-        values.put(STATUS, ttm.getShortname());
+        values.put(STATUS, ttm.getStatus());
         values.put(FILEID, ttm.getFileid());
         values.put(TYPE, ttm.getType());
 
@@ -228,7 +245,35 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     @Override
     public ArrayList<TTM> getAllTTM() {
         ArrayList<TTM> list = new ArrayList<TTM>();
-        String selectQuery = "SELECT  * FROM " + MAIN;
+        String selectQuery = "SELECT  * FROM " + MAIN + " WHERE " + STATUS + " = " + 0;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                TTM obj = new TTM();
+                obj.setId(Integer.parseInt(cursor.getString(0)));
+                obj.setTitle(cursor.getString(1));
+                obj.setFsrar(cursor.getString(2));
+                obj.setGuid(cursor.getString(3));
+                obj.setDate(cursor.getString(4));
+                obj.setInn(cursor.getString(5));
+                obj.setShortname(cursor.getString(6));
+                obj.setStatus(cursor.getString(7));
+                obj.setFileid(cursor.getString(8));
+                obj.setType(cursor.getString(9));
+                list.add(obj);
+            } while (cursor.moveToNext());
+        }
+
+        return list;
+    }
+
+    @Override
+    public ArrayList<TTM> getFinishTTM() {
+        ArrayList<TTM> list = new ArrayList<TTM>();
+        String selectQuery = "SELECT  * FROM " + MAIN + " WHERE " + STATUS + " = " + 1;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -333,6 +378,27 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     }
 
     @Override
+    public ArrayList<ALC> getAllALCByShare(String id) {
+        ArrayList<ALC> list = new ArrayList<ALC>();
+        String selectQuery = "SELECT  * FROM " + ALCT + " WHERE " + ITEMID + " = '" + id + "'";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                ALC obj = new ALC();
+                if(!cursor.getString(4).equals("0")) {
+                    obj.setAlc(cursor.getString(3));
+                    list.add(obj);
+                }
+            } while (cursor.moveToNext());
+        }
+
+        return list;
+    }
+
+    @Override
     public String findALC(String alc, String id) {
 
         String selectQuery = null;
@@ -416,24 +482,24 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
 
         if (cursor.moveToFirst()) {
             id_alc = cursor.getString(0);
+            String id_item = cursor.getString(2);
             if(cursor.getString(4).equals("1")) {
                 return "-2";
             } else {
                 ContentValues values = new ContentValues();
-                selectQuery = "SELECT  * FROM " + FOOTER + " WHERE " + ALCCODE + " = '" + alc + "'";
+                selectQuery = "SELECT  * FROM " + FOOTER + " WHERE " + ID + " = '" + id_item + "'";
 
                 db = this.getWritableDatabase();
                 cursor = db.rawQuery(selectQuery, null);
 
                 if (cursor.moveToFirst()) {
                     do {
-
                         values.put(FACTNUMS, Integer.valueOf(cursor.getString(9)) + 1);
 
                     } while (cursor.moveToNext());
                 }
 
-                db.update(FOOTER, values, ID 	+ "	= ?", new String[] { id });
+                db.update(FOOTER, values, ID 	+ "	= ?", new String[] { id_item });
                 updateAlcStatus(alc);
             }
         }
@@ -521,6 +587,14 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
             db.update(FOOTER, values, BARCODE 	+ "	= ?", new String[] { alc });
         }
         return id_alc;
+    }
+
+    @Override
+    public void updateTTNById(String id){
+        ContentValues values = new ContentValues();
+        values.put(STATUS, 1);
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.update(MAIN, values, ID	+ "	= ?", new String[] { id });
     }
 
     @Override
